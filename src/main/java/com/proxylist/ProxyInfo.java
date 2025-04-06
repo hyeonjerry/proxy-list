@@ -38,4 +38,10 @@ public record ProxyInfo(String ip, int port, Proxy type) {
                 .host(ip)
                 .port(port);
     }
+
+    @Override
+    public String toString() {
+        final String protocol = type.toString().toLowerCase();
+        return String.format("%s://%s:%d", protocol, ip, port);
+    }
 }
