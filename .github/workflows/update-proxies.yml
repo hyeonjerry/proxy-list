@@ -1,0 +1,41 @@
+name: Update Proxy List
+
+on:
+  workflow_dispatch:
+#  schedule:
+#    - cron: "*/20 * * * *" # Run every 20 minutes
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: "gradle"
+
+      - name: Build with Gradle
+        run: gradle clean build -x test
+
+      - name: Run Proxy List Application
+        run: java -jar build/libs/proxy-list-0.0.1-SNAPSHOT.jar
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+      - name: Commit and Push
+        run: |
+          git add proxies.txt
+          git commit -m "Update proxy list"
+          git push
